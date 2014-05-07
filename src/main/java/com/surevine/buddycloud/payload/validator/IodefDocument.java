@@ -307,6 +307,6 @@ public class IodefDocument implements PayloadValidator {
 
     @Override
     public boolean canValidate(String contentType) {
-        return contentType.equals(IODEF_NS);
+        return IODEF_NS.equals(contentType);
     }
 }
