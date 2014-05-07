@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 import org.apache.log4j.Logger;
 import org.buddycloud.channelserver.channel.ChannelManager;
 import org.buddycloud.channelserver.channel.Conf;
@@ -18,6 +19,7 @@ import org.xmpp.packet.JID;
  *
  * Only provides partial coverage of the IODEF standard at present
  */
+@PluginImplementation
 public class IodefDocument implements PayloadValidator {
 
     public static final String IODEF_NS = "urn:ietf:params:xml:ns:iodef-1.0";
