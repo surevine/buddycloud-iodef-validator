@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.xeoh.plugins.base.annotations.Capabilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+
 import org.apache.log4j.Logger;
 import org.buddycloud.channelserver.channel.ChannelManager;
 import org.buddycloud.channelserver.channel.Conf;
@@ -308,7 +310,8 @@ public class IodefDocument implements PayloadValidator {
     }
 
     @Override
-    public boolean canValidate(String contentType) {
-        return IODEF_NS.equals(contentType);
+    @Capabilities
+    public String[] capabilities() {
+        return new String[] {IODEF_NS};
     }
 }
