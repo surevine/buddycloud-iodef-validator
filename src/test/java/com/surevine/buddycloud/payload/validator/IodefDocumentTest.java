@@ -8,7 +8,6 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.buddycloud.channelserver.channel.ChannelManager;
-import org.buddycloud.channelserver.channel.validate.IodefDocument;
 import org.buddycloud.channelserver.pubsub.model.impl.GlobalItemIDImpl;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
