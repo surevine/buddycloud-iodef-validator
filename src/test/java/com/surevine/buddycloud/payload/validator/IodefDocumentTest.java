@@ -25,7 +25,7 @@ public class IodefDocumentTest {
     private IodefDocument validator;
 
     private IQ publishRequest;
-    private Element publishIodef;
+    private Element item;
 
     private ChannelManager channelManager;
 
@@ -37,8 +37,8 @@ public class IodefDocumentTest {
     public void setUp() throws Exception {
         publishRequest = readStanzaAsIq("/iq/pubsub/publish/iodef.stanza");
 
-        publishIodef = publishRequest.getChildElement().element("publish")
-                .element("item").element("IODEF-Document");
+        item = publishRequest.getChildElement().element("publish")
+                .element("item");
 
         channelManager = Mockito.mock(ChannelManager.class);
     }
@@ -54,7 +54,7 @@ public class IodefDocumentTest {
 
     @Test
     public void shouldValidateWellFormedIodefDocument() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertTrue("Well formed IODEF document should be valid",
                 validator.isValid());
@@ -72,9 +72,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingVersionAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.attribute("version").detach();
+        iodefDocument.element("IODEF-Document").attribute("version").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing version should be invalid",
                 validator.isValid());
@@ -84,9 +84,9 @@ public class IodefDocumentTest {
 
     @Test
     public void unsupportedVersionReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.attribute("version").setValue("0.00");
+        iodefDocument.element("IODEF-Document").attribute("version").setValue("0.00");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Unsupported version should be invalid",
                 validator.isValid());
@@ -96,9 +96,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingLangAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.attribute("lang").detach();
+        iodefDocument.element("IODEF-Document").attribute("lang").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing lang should be invalid",
                 validator.isValid());
@@ -109,10 +109,10 @@ public class IodefDocumentTest {
     @Test
     public void missingIncidentReturnsInvalid() throws Exception {
 
-        Assert.assertNotNull(publishIodef.element("Incident"));
+        Assert.assertNotNull(item.element("IODEF-Document").element("Incident"));
 
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        iodefDocument.element("Incident").detach();
+        Element iodefDocument = (Element) this.item.clone();
+        iodefDocument.element("IODEF-Document").element("Incident").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse(validator.isValid());
         Assert.assertEquals("incident-element-required",
@@ -122,11 +122,11 @@ public class IodefDocumentTest {
     @Test
     public void missingIncidentIdReturnsInvalid() throws Exception {
 
-        Assert.assertNotNull(publishIodef.element("Incident").element(
+        Assert.assertNotNull(item.element("IODEF-Document").element("Incident").element(
                 "IncidentID"));
 
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        iodefDocument.element("Incident").element("IncidentID").detach();
+        Element iodefDocument = (Element) this.item.clone();
+        iodefDocument.element("IODEF-Document").element("Incident").element("IncidentID").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse(validator.isValid());
         Assert.assertEquals("incident-id-element-required",
@@ -135,9 +135,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyIncidentIdReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("IncidentID").setText("");
+        iodefDocument.element("IODEF-Document").element("Incident").element("IncidentID").setText("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Empty IncidentID should be invalid",
                 validator.isValid());
@@ -147,9 +147,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingIncidentIdNameAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("IncidentID")
+        iodefDocument.element("IODEF-Document").element("Incident").element("IncidentID")
                 .attribute("name").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing name should be invalid",
@@ -160,9 +160,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyIncidentIdNameAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("IncidentID")
+        iodefDocument.element("IODEF-Document").element("Incident").element("IncidentID")
                 .attribute("name").setValue("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Empty name should be invalid", validator.isValid());
@@ -173,11 +173,11 @@ public class IodefDocumentTest {
     @Test
     public void missingReportTimeIsAdded() throws Exception {
 
-        Assert.assertNotNull(publishIodef.element("Incident").element(
+        Assert.assertNotNull(item.element("IODEF-Document").element("Incident").element(
                 "ReportTime"));
 
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        iodefDocument.element("Incident").element("ReportTime").detach();
+        Element iodefDocument = (Element) this.item.clone();
+        iodefDocument.element("IODEF-Document").element("Incident").element("ReportTime").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertTrue("Missing ReportTime should be added",
                 validator.isValid());
@@ -191,9 +191,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyReportTimeAdded() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("ReportTime").setText("");
+        iodefDocument.element("IODEF-Document").element("Incident").element("ReportTime").setText("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertTrue("Missing ReportTime should be added",
                 validator.isValid());
@@ -208,11 +208,11 @@ public class IodefDocumentTest {
     @Test
     public void missingAssessmentReturnsInvalid() throws Exception {
 
-        Assert.assertNotNull(publishIodef.element("Incident").element(
+        Assert.assertNotNull(item.element("IODEF-Document").element("Incident").element(
                 "Assessment"));
 
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        iodefDocument.element("Incident").element("Assessment").detach();
+        Element iodefDocument = (Element) this.item.clone();
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse(validator.isValid());
         Assert.assertEquals("assessment-element-required",
@@ -221,9 +221,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingAnyTypeOfImpactElementReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Assessment")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment")
                 .element("Impact").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing Impact element class should be invalid",
@@ -234,9 +234,9 @@ public class IodefDocumentTest {
 
     @Test
     public void supportsTimeImpactElementAsImpactType() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Assessment")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment")
                 .element("Impact").setName("TimeImpact");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertTrue("TimeImpact should be a valid 'Impact' type",
@@ -247,9 +247,9 @@ public class IodefDocumentTest {
 
     @Test
     public void supportsMonetaryImpactElementAsImpactType() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Assessment")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment")
                 .element("Impact").setName("MonetaryImpact");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertTrue("MonetaryImpact should be a valid 'Impact' type",
@@ -260,9 +260,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingImpactLangAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Assessment")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment")
                 .element("Impact").attribute("lang").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing lang should be invalid",
@@ -273,9 +273,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyImpactLangAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Assessment")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment")
                 .element("Impact").attribute("lang").setValue("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Empty lang should be invalid", validator.isValid());
@@ -285,9 +285,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingImpactTypeAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Assessment")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment")
                 .element("Impact").attribute("type").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing type should be invalid",
@@ -298,9 +298,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyImpactTypeAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Assessment")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Assessment")
                 .element("Impact").attribute("type").setValue("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Empty type should be invalid", validator.isValid());
@@ -311,11 +311,11 @@ public class IodefDocumentTest {
     @Test
     public void missingContactReturnsInvalid() throws Exception {
 
-        Assert.assertNotNull(publishIodef.element("Incident")
+        Assert.assertNotNull(item.element("IODEF-Document").element("Incident")
                 .element("Contact"));
 
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        iodefDocument.element("Incident").element("Contact").detach();
+        Element iodefDocument = (Element) this.item.clone();
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse(validator.isValid());
         Assert.assertEquals("contact-element-required",
@@ -324,9 +324,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingContactRoleAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Contact").attribute("role")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").attribute("role")
                 .detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing role should be invalid",
@@ -337,9 +337,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyContactRoleAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Contact").attribute("role")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").attribute("role")
                 .setValue("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Empty role should be invalid", validator.isValid());
@@ -349,9 +349,9 @@ public class IodefDocumentTest {
 
     @Test
     public void missingContactTypeAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Contact").attribute("type")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").attribute("type")
                 .detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Missing type should be invalid",
@@ -362,9 +362,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyContactTypeAttributeReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Contact").attribute("type")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").attribute("type")
                 .setValue("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Empty type should be invalid", validator.isValid());
@@ -375,13 +375,13 @@ public class IodefDocumentTest {
     @Test
     public void contactElementWithNoChildReturnsInvalid() throws Exception {
 
-        Assert.assertNotNull(publishIodef.element("Incident")
+        Assert.assertNotNull(item.element("IODEF-Document").element("Incident")
                 .element("Contact"));
 
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        iodefDocument.element("Incident").element("Contact")
+        Element iodefDocument = (Element) this.item.clone();
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact")
                 .element("ContactName").detach();
-        iodefDocument.element("Incident").element("Contact").element("Email")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").element("Email")
                 .detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("", validator.isValid());
@@ -391,9 +391,9 @@ public class IodefDocumentTest {
 
     @Test
     public void emptyEmailReturnsInvalid() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Contact").element("Email")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").element("Email")
                 .setText("");
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertFalse("Empty Email should be invalid", validator.isValid());
@@ -403,9 +403,9 @@ public class IodefDocumentTest {
 
     @Test
     public void doesNotRequireEmailElement() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
-        iodefDocument.element("Incident").element("Contact").element("Email")
+        iodefDocument.element("IODEF-Document").element("Incident").element("Contact").element("Email")
                 .detach();
         validator = getIodefDocumentObject(iodefDocument);
         Assert.assertTrue("Email element should not be mandatory",
@@ -416,7 +416,7 @@ public class IodefDocumentTest {
 
     @Test
     public void dealsWithInReplyToGracefully() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
         validator = getIodefDocumentObject(iodefDocument);
 
@@ -425,7 +425,7 @@ public class IodefDocumentTest {
 
     @Test
     public void suppliesGlobalItemId() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
         validator = getIodefDocumentObject(iodefDocument);
 
@@ -437,11 +437,11 @@ public class IodefDocumentTest {
 
     @Test
     public void requiresIncidentForGlobalItemId() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
         validator = getIodefDocumentObject(iodefDocument);
 
-        iodefDocument.element("Incident").detach();
+        iodefDocument.element("IODEF-Document").element("Incident").detach();
         String globalItemId = validator.getGlobalItemId();
 
         Assert.assertNull(globalItemId);
@@ -449,8 +449,8 @@ public class IodefDocumentTest {
 
     @Test
     public void requiresIncidentIdForGlobalItemId() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        Element incidentId = iodefDocument.element("Incident")
+        Element iodefDocument = (Element) this.item.clone();
+        Element incidentId = iodefDocument.element("IODEF-Document").element("Incident")
                 .element("IncidentID");
 
         validator = getIodefDocumentObject(iodefDocument);
@@ -463,8 +463,8 @@ public class IodefDocumentTest {
 
     @Test
     public void requiresIncidentIdNameForGlobalItemId() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
-        Element incidentId = iodefDocument.element("Incident")
+        Element iodefDocument = (Element) this.item.clone();
+        Element incidentId = iodefDocument.element("IODEF-Document").element("Incident")
                 .element("IncidentID");
 
         validator = getIodefDocumentObject(iodefDocument);
@@ -477,11 +477,12 @@ public class IodefDocumentTest {
 
     @Test
     public void suppliesLocalItemId() throws Exception {
-        Element iodefDocument = (Element) this.publishIodef.clone();
+        Element iodefDocument = (Element) this.item.clone();
 
         validator = getIodefDocumentObject(iodefDocument);
 
-        Element incidentId = iodefDocument.element("Incident")
+        Element incidentId = iodefDocument.element("IODEF-Document")
+                                          .element("Incident")
                                           .element("IncidentID");
 
         String expectedOriginator = incidentId.attribute("name").getValue();

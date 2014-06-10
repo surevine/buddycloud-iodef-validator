@@ -66,7 +66,9 @@ public class IodefDocument implements PayloadValidator {
 
     @Override
     public void setPayload(Element payload) {
-        this.payload = payload;
+        if (null != payload) {
+            this.payload = payload.element("IODEF-Document");
+        }
     }
 
     @Override
